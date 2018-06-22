@@ -63,7 +63,7 @@ def resize(img=None, shape=(32,32)):
         img = cv2.resize(img, resize, interpolation = cv2.INTER_AREA)
     return img
 
-class Face():
+class Face:
     path = None
     resize = None
     shape = None
@@ -90,7 +90,9 @@ class Face():
         self.shape=imgdata.shape
 
     def retrieve_img(resize=self.resize, crop_square=True, grayscale=True):
-        img = cv2.imread(self.path)
+        if self.imgdata == None:
+            self.imgdata = cv2.imread(self.path)
+        img = self.imgdata
         if resize != None:
             img = resize(img, resize)
         if grayscale:
@@ -124,9 +126,10 @@ def index_faces(imgsdir=None, inst=None, img_containers=None, cache=True, crop_s
             # add unique identifier to a set for later iteration
             indexed_faces.add(rac+' '+gen+' '+emo+' '+id)
             # store image reference in a central dict
-            img_ref_dict[rac][gen][emo][id] = os.path.join(container, filename)
             face = Face(rac=rac, gen=gen, emo=emo, id=id, resize=resize,
-                        path=img_ref_dict[rac][gen][emo][id], cache=True)
+                        path=os.path.join(container, filename), cache=True)
+            img_ref_dict[rac][gen][emo][id] = face
+            # os.path.join(container, filename)
 
             if crop_square:
                 # crop to a square according to lowest of width or height
@@ -136,7 +139,8 @@ def index_faces(imgsdir=None, inst=None, img_containers=None, cache=True, crop_s
                 face.set_img(resize(img=img, shape=resize))
             if cache:
                 instimgdir = os.path.join(inst, 'images')
-                face.save_img(os.path.join(instimgdir, rac+' '+gen+' '+emo+' '+id))
+                face.save_img(os.path.join(instimgdir,
+                                           rac+' '+gen+' '+emo+' '+id))
 
     # dump objects to .json files in the installation directory
     with open(os.path.join(inst,'images.json'),'w') as imgjson:
@@ -145,3 +149,9 @@ def index_faces(imgsdir=None, inst=None, img_containers=None, cache=True, crop_s
         json.dump(indexed_faces, indjson)
 
     return img_ref_dict, indexed_faces
+
+def get_face(rac='W', gen='F', emo='HC', id='022', resize=None,
+             grayscale=True, img_ref_dict={}):
+    face = img_ref_dict[rac][gen][emo][id]
+    return face.retrieve_img(resize=resize, crop_square=True,
+                             grayscale=grayscale)
