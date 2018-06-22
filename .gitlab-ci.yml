@@ -1,0 +1,34 @@
+variables:
+    TWINE_USERNAME: SECURE
+    TWINE_PASSWORD: SECURE
+
+stages:
+    - deploy
+    - test
+
+build:
+    enviroment:
+        name: dev
+    stage: build
+    before_script:
+        - apt-get update -qq
+        - apt-get install -y -qq python3 python3-pip
+        - python3 -m pip install --user --upgrade setuptools wheel twine
+    script:
+        - python3 setup.py sdist bdist_wheel
+        - twine upload dist/*
+    only:
+    - /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
+    
+test:
+    environment:
+        name: dev
+    stage: test
+    before_script:
+        - apt-get update -qq
+        - apt-get install -y -qq python3 python3-pip
+        - python3 -m pip install --user --upgrade setuptools wheel twine
+    script:
+        python3 -m pip install cfd-reader
+    only:
+    - /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
