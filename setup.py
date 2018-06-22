@@ -3,9 +3,14 @@
 from setuptools import setup
 from setuptools import find_packages
 
+with open("README.md", "r") as readme:
+    long_description = readme.read()
+
 setup(name='cfd-reader',
       version='0.1.1',
       description='A Python module to access the Chicago Face Database',
+      long_description=long_description,
+      long_description_content_type="text/markdown",
       url='http://gitlab.com/aalok-sathe/cfd-reader',
       author='Aalok Sathe',
       author_email='aalok.sathe@richmond.edu',
