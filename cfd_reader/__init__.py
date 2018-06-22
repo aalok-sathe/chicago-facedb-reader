@@ -11,8 +11,8 @@ import numpy as np
 from . import preparation
 from . import faces
 
-global home = os.path.expanduser('~')
-global inst = os.path.join(home, ".cfd-faces")
+home = os.path.expanduser('~')
+inst = os.path.join(home, ".cfd-faces")
 
 try:
     bool, cached = preparation.is_prepared(home=home, inst=inst)
@@ -28,6 +28,8 @@ def clean():
             shutil.rmtree(inst)
             print("Installation cleaned. Exiting.")
             raise SystemExit
+        except IOError:
+            print("Failed to uninstall. Please delete manually from", inst)
 
 def load_data(grayscale=True, train_proportion=.9, resize=None):
     """Method for use in other scripts and/or modules
