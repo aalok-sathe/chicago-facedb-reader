@@ -14,8 +14,8 @@ deploy:
     script:
         - python3 setup.py sdist bdist_wheel
         - twine upload dist/*
-    only:
-    - /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
+    #only:
+    #- /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
     environment:
         name: dev
 
@@ -27,7 +27,7 @@ test:
     script:
         python3 -m pip install cfd-reader
         python3 -c "import cfd-reader"
-    only:
-    - /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
+    #only:
+    #- /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
     environment:
         name: dev
