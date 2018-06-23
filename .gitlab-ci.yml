@@ -16,7 +16,7 @@ deploy:
         - twine upload dist/*
     only:
     - /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
-    enviroment:
+    environment:
         name: dev
     
 test:
@@ -29,5 +29,5 @@ test:
         python3 -c "import cfd-reader"
     only:
     - /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
-    enviroment:
+    environment:
         name: dev
