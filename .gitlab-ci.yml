@@ -8,7 +8,7 @@ stages:
 
 deploy:
     image: python:3.6
-    stage: build
+    stage: deploy
     before_script:
         - python3 -m pip install --user --upgrade setuptools wheel twine
     script:
