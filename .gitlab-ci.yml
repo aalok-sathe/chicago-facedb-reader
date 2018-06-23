@@ -6,9 +6,7 @@ stages:
     - deploy
     - test
 
-build:
-    enviroment:
-        name: dev
+deploy:
     stage: build
     before_script:
         - apt-get update -qq
@@ -19,10 +17,10 @@ build:
         - twine upload dist/*
     only:
     - /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
+    enviroment:
+        name: dev
     
 test:
-    environment:
-        name: dev
     stage: test
     before_script:
         - apt-get update -qq
@@ -32,3 +30,5 @@ test:
         python3 -m pip install cfd-reader
     only:
     - /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
+    enviroment:
+        name: dev
