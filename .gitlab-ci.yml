@@ -7,10 +7,9 @@ stages:
     - test
 
 deploy:
+    image: python:3.6
     stage: build
     before_script:
-        - apt-get update -qq
-        - apt-get install -y -qq python3 python3-pip
         - python3 -m pip install --user --upgrade setuptools wheel twine
     script:
         - python3 setup.py sdist bdist_wheel
@@ -21,13 +20,13 @@ deploy:
         name: dev
     
 test:
+    image: python:3.6
     stage: test
     before_script:
-        - apt-get update -qq
-        - apt-get install -y -qq python3 python3-pip
         - python3 -m pip install --user --upgrade setuptools wheel twine
     script:
         python3 -m pip install cfd-reader
+        python3 -c "import cfd-reader"
     only:
     - /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
     enviroment:
