@@ -6,7 +6,7 @@ stages:
     - deploy
     - test
 
-build:
+deploy:
     enviroment:
         name: dev
     stage: build
@@ -19,7 +19,7 @@ build:
         - twine upload dist/*
     only:
     - /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
-    
+
 test:
     environment:
         name: dev
