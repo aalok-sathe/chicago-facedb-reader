@@ -31,8 +31,8 @@ test:
     #before_script:
     #    - python3 -m pip install -U setuptools wheel twine
     script:
-        python3 -m pip install cfd-reader
-        python3 -c "import cfd_reader"
+        - python3 -m pip install cfd-reader
+        - python3 -c "import cfd_reader"
     #only:
     #- /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
     #- /^\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
