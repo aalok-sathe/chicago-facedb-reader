@@ -18,7 +18,7 @@ deploy:
         paths:
             - build/
             - dist/
-            - *.egg-info/
+            - cfd_reader.egg-info/
     #only:
     #- /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
     environment:
