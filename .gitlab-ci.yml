@@ -14,6 +14,11 @@ deploy:
     script:
         - python3 setup.py sdist bdist_wheel
         - python3 -m twine upload dist/*
+    artifacts:
+        paths:
+            - build/
+            - dist/
+            - *.egg-info/
     #only:
     #- /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
     environment:
