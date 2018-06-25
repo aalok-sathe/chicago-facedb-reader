@@ -2,6 +2,8 @@
 
 **A `python3` module to index, pre-process, and supply facial data from the Chicago Face Database (CFD).**
 
+[![pipeline status](https://gitlab.com/aalok-sathe/cfd-reader/badges/master/pipeline.svg)](https://gitlab.com/aalok-sathe/cfd-reader/commits/master)
+
 A convenient way to load data from the Chicago Face Database, wrapped in `numpy` arrays, to feed to your neural network.
 
 ## installation
