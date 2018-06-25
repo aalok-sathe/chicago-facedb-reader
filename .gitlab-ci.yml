@@ -31,6 +31,8 @@ test:
     #before_script:
     #    - python3 -m pip install -U setuptools wheel twine
     script:
+        - mkdir ~/.cfd-faces && cd ~/.cfd-faces && mkdir images
+        - touch cfd_stats.csv images.json
         - python3 -m pip install cfd-reader
         - python3 -c "import cfd_reader"
     #only:
