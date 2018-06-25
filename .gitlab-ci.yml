@@ -10,10 +10,10 @@ deploy:
     image: python:3.6
     stage: deploy
     before_script:
-        - python3 -m pip install --user --upgrade setuptools wheel twine
+        - python3 -m pip install -U setuptools wheel twine
     script:
         - python3 setup.py sdist bdist_wheel
-        - twine upload dist/*
+        - python3 -m twine upload dist/*
     #only:
     #- /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
     environment:
@@ -22,8 +22,8 @@ deploy:
 test:
     image: python:3.6
     stage: test
-    before_script:
-        - python3 -m pip install --user --upgrade setuptools wheel twine
+    #before_script:
+    #    - python3 -m pip install -U setuptools wheel twine
     script:
         python3 -m pip install cfd-reader
         python3 -c "import cfd-reader"
