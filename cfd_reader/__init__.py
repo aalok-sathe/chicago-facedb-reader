@@ -1,25 +1,36 @@
 from __future__ import absolute_import
-# from __future__ import print_function
-# from __future__ import division
 
-import os
-import shutil
-import json
-import random
-import numpy as np
+################################################################
+# initial imports
+################################################################
+import os                   # file i/o and fs access
+import shutil               # file i/o
+import json                 # to dump py objects to json files
+import random               # to shuffle data before supplying
+import numpy as np          # for vector artithmetic
 
-from . import preparation
-from . import faces
+from . import preparation   # local file to manage installation
+from . import faces         # local file to handle files
 
+################################################################
+# set global paths for use throughout
+################################################################
 home = os.path.expanduser('~')
 inst = os.path.join(home, ".cfd-faces")
 
+################################################################
+# check if installation exists, and whether images are cached
+# if not, start installation process
+################################################################
 try:
     bool, cached = preparation.is_prepared(home=home, inst=inst)
     assert bool
 except AssertionError:
     preparation.prepare(home=home, inst=inst)
 
+################################################################
+# clean up existing installation. simply rm's files
+################################################################
 def clean():
     confirmation = input("Clean installation? You will have to reindex faces"
                        + " on the next run. (y/n): ").lower()
@@ -31,7 +42,11 @@ def clean():
         except IOError:
             print("Failed to uninstall. Please delete manually from", inst)
 
-def load_data(grayscale=True, train_proportion=.9, resize=None):
+################################################################
+# provide organized data split into train and test sets for
+# use, most likely, with some machine learning procedure
+################################################################
+def load_data(grayscale=True, train_proportion=.9, resize=None, faces=False):
     """Method for use in other scripts and/or modules
     to produce DB data in a systematic manner, split into
     a training set and a test set (similar to the keras-MNIST method)"""

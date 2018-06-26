@@ -14,6 +14,9 @@ from collections import defaultdict # to use during indexing faces
 import numpy as np # for multidimensional arrays and vector arithmetic
 import enum # for enumerating labels using indices
 
+################################################################
+# a helper method returning a dict object for use in indexing
+################################################################
 def supply_dict(key = 'genders',
                 legend = {'genders' : 0, 'emotions' : 1}):
     """constructs a nested disctionary with appropriate cetegory hierarchy for
@@ -31,18 +34,23 @@ def supply_dict(key = 'genders',
         ('HC', defaultdict(str)),
     ])
 
+################################################################
+# some enums to number labels while returning label vectors
+################################################################
 class Race(enum.Enum):
     A = 1; B = 2; L = 3; W = 4
     UNK = 0
-
 class Gender(enum.Enum):
     F = 1; M = 2
     UNK = 0
-
 class Emotion(enum.Enum):
     A = 1; F = 2; HC = 3; HO = 4; N = 5
     UNK = 0
 
+################################################################
+# crops a given image to square dimensions by reducing Whichever
+# one of height or width is greater, equally on both sides
+################################################################
 def crop_square(img=None) -> np.ndarray:
     """Crop image to a square with dimension that is lowest
     of height and width. Whichever one of those dimensions is
@@ -56,6 +64,9 @@ def crop_square(img=None) -> np.ndarray:
         print("Error, passed argument is not a proper image.")
         return img
 
+################################################################
+# resizes image to supplied 2D shape (doesn't disturb channels)
+################################################################
 def resize(img=None, shape=(32,32)):
     """Resize image to supplied dimensions"""
     img = self.images[rac][gen][emo][id]
@@ -63,6 +74,11 @@ def resize(img=None, shape=(32,32)):
         img = cv2.resize(img, resize, interpolation = cv2.INTER_AREA)
     return img
 
+################################################################
+# make a `Face` class as an option for returning, with its own
+# methods for data access, so that data can be returned in a
+# more organized manner
+################################################################
 class Face:
     path = None
     resize = None
@@ -105,6 +121,9 @@ class Face:
     def save_img(new_path=None):
         cv2.imwrite(new_path, self.imgdata)
 
+################################################################
+# index and process faces according to supplied options
+################################################################
 def index_faces(imgsdir=None, inst=None, img_containers=None, cache=True, crop_square=True, resize=None) -> dict:
     """Processes and indexes faces from the CFD and dumps them to a json file
        for easy retrieval"""
@@ -150,6 +169,10 @@ def index_faces(imgsdir=None, inst=None, img_containers=None, cache=True, crop_s
 
     return img_ref_dict, indexed_faces
 
+################################################################
+# getter method to retrieve the image of a particular
+# description of a face in terms of race,gender,emotion,id
+################################################################
 def get_face(rac='W', gen='F', emo='HC', id='022', resize=None,
              grayscale=True, img_ref_dict={}):
     face = img_ref_dict[rac][gen][emo][id]
