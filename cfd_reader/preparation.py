@@ -5,6 +5,7 @@ from __future__ import absolute_import
 # from __future__ import division
 
 import os # for filesystem access
+import shutil # for filesystem access
 import cv2 # opencv library for image processing
 import typing # for function annotations
 import json # to dump objects in the json format (as opposed to pickled binary)
@@ -28,8 +29,11 @@ def prepare(home=None, inst=None, cfddir=None) -> None:
        indexes faces in the CFD images directory and dumps them to .json"""
     # make installation directory in user's home
     try:
-        os.mkdir(inst)
-        os.mkdir(os.path.join(inst,'images'))
+        try:
+            os.mkdir(inst)
+            os.mkdir(os.path.join(inst,'images'))
+        except FileExistsError:
+            pass
     except PermissionError:
         print("Error, could not make directory", inst,": insufficient access")
         raise SystemExit
@@ -77,13 +81,13 @@ def prepare(home=None, inst=None, cfddir=None) -> None:
     # gather options for index_faces operation
     print("Beginning to index faces.")
     crop_square = True
-    if input("Crop the faces square? (y/n) ").lower() == 'n':
+    if input("Crop the faces square? ([y]/n):\t").lower() == 'n':
         crop_square = False
     cache = True
-    if input("Cache image files in install directory? (y/n): ").lower() == 'n':
+    if input("Cache images in install directory? ([y]/n):\t").lower() == 'n':
         cache = False
-    resize = input("Resize images to custom dimentions? Input 'height width',"
-                 + " e.g. (default): 32 32. 'n' for NO.\n").lower()
+    resize = input("Resize images to custom dimentions?\nInput 'height width',"
+                 + " e.g. (default): 32 32. 'n' for NO.:\t").lower()
     if resize == 'n': resize = None
     elif not len(resize): resize = (32,32)
     else: resize = tuple(resize.split())
