@@ -17,7 +17,7 @@ from . import faces         # local file to handle files
 ################################################################
 home = os.path.expanduser('~')
 inst = os.path.join(home, ".cfd-faces")
-
+print(os.path.realpath(__file__))
 ################################################################
 # check if installation exists, and whether images are cached
 # if not, start installation process
