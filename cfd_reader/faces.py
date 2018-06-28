@@ -51,7 +51,7 @@ class Emotion(enum.Enum):
 # crops a given image to square dimensions by reducing Whichever
 # one of height or width is greater, equally on both sides
 ################################################################
-def crop_square(img=None) -> np.ndarray:
+def crop_img(img=None) -> np.ndarray:
     """Crop image to a square with dimension that is lowest
     of height and width. Whichever one of those dimensions is
     greater is reduced to the newly determined dimension of
@@ -67,10 +67,9 @@ def crop_square(img=None) -> np.ndarray:
 ################################################################
 # resizes image to supplied 2D shape (doesn't disturb channels)
 ################################################################
-def resize(img=None, shape=(32,32)):
+def resize_img(img=None, resize=(32,32)) -> np.ndarray:
     """Resize image to supplied dimensions"""
-    img = self.images[rac][gen][emo][id]
-    if resize!=img.shape[0:2]:
+    if resize != img.shape[0:2]:
         img = cv2.resize(img, resize, interpolation = cv2.INTER_AREA)
     return img
 
@@ -86,8 +85,9 @@ class Face:
     imgdata = None
     rac = None; gen = None; emo = None; id = None
 
-    def __init__(imgdata=None, path=None, resize=None, shape=None, grayscale=1,
-                 cache=False, rac=None, gen=None, emo=None, id=None):
+    def __init__(self, imgdata=None, path=None, resize=None, shape=None,
+                 grayscale=1, cache=False, rac=None, gen=None, emo=None,
+                 id=None):
         self.imgdata = imgdata
         self.path = path
         self.resize = resize
@@ -98,27 +98,27 @@ class Face:
             self.imgdata = cv2.imread(self.path)
             self.shape = self.imgdata.shape
 
-    def get_channels():
+    def get_channels(self):
         return self.shape[2]
 
-    def set_img(imgdata=None):
+    def set_img(self, imgdata=None):
         self.imgdata=imgdata
         self.shape=imgdata.shape
 
-    def retrieve_img(resize=resize, crop_square=True, grayscale=True):
+    def retrieve_img(self, resize=resize, crop_square=True, grayscale=True):
         if self.imgdata == None:
             self.imgdata = cv2.imread(self.path)
         img = self.imgdata
         if resize != None:
-            img = resize(img, resize)
+            img = resize_img(img, resize=resize)
         if grayscale:
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             img = np.reshape(img, (*img.shape[0:2], 1))
         if crop_square:
-            img = crop_square(img)
+            img = crop_img(img)
         return img
 
-    def save_img(new_path=None):
+    def save_img(self, new_path=None):
         cv2.imwrite(new_path, self.imgdata)
 
 ################################################################
@@ -135,31 +135,34 @@ def index_faces(imgsdir=None, inst=None, img_containers=None, cache=True, crop_s
     indexed_faces = set()
     # iterate over subfolders corresponding to each person in the DB
     for container in progressbar(img_containers, redirect_stdout=True):
-        # first two characters of dir name are race, gender. E.g. AF
-        rac, gen = container[:2]
         # iterate over the individual pictures of each person
         for filename in os.listdir(container):
             basename = filename.split('.')[0]
+            if not len(basename):
+                continue
             # note down person ID and the facial expression (emotion)
             id,emo = basename.split('-')[2], basename.split('-')[4]
+            # assign race, gender. E.g. AF
+            rac,gen = basename.split('-')[1][:]
             # add unique identifier to a set for later iteration
             indexed_faces.add(rac+' '+gen+' '+emo+' '+id)
             # store image reference in a central dict
             face = Face(rac=rac, gen=gen, emo=emo, id=id, resize=resize,
                         path=os.path.join(container, filename), cache=True)
+            print(rac+' '+gen+' '+emo+' '+id)
             img_ref_dict[rac][gen][emo][id] = face
             # os.path.join(container, filename)
 
             if crop_square:
                 # crop to a square according to lowest of width or height
-                face.set_img(crop_square(img=face.imgdata))
+                face.set_img(crop_img(img=face.imgdata))
             if resize != None:
                 # Resize
-                face.set_img(resize(img=img, shape=resize))
+                face.set_img(resize_img(img=face.imgdata, resize=resize))
             if cache:
                 instimgdir = os.path.join(inst, 'images')
                 face.save_img(os.path.join(instimgdir,
-                                           rac+' '+gen+' '+emo+' '+id))
+                                           rac+' '+gen+' '+emo+' '+id+'.png'))
 
     # dump objects to .json files in the installation directory
     with open(os.path.join(inst,'images.json'),'w') as imgjson:
