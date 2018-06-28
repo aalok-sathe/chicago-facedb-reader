@@ -51,10 +51,10 @@ def load_data(grayscale=True, train_proportion=.9, resize=None, faces=False):
     to produce DB data in a systematic manner, split into
     a training set and a test set (similar to the keras-MNIST method)"""
     # load json objects storing face references
-    with open(os.path.join(inst,'images.json'),'r') as imgjson:
-        img_ref_dict = json.load(imgjson)
-    with open(os.path.join(inst,'indexed.json'),'r') as indjson:
-        indexed_faces = json.load(indjson)
+    with open(os.path.join(inst,'images.pickle'),'rb') as imgjson:
+        img_ref_dict = pickle.load(imgjson)
+    with open(os.path.join(inst,'indexed.pickle'),'rb') as indjson:
+        indexed_faces = pickle.load(indjson)
 
     all = list(indexed_faces)
     random.shuffle(all)

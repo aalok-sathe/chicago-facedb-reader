@@ -8,6 +8,7 @@ import os # for filesystem access
 import cv2 # opencv library for image processing
 import typing # for function annotations
 import json # to dump objects in the json format (as opposed to pickled binary)
+import pickle # to dump objects as an alternative to json
 import xlrd,csv # to read the CFD data codebook and output it to a csv file
 from progressbar import progressbar # to display progress during iteration
 from collections import defaultdict # to use during indexing faces
@@ -124,7 +125,7 @@ class Face:
 ################################################################
 # index and process faces according to supplied options
 ################################################################
-def index_faces(imgsdir=None, inst=None, img_containers=None, cache=True, crop_square=True, resize=None) -> dict:
+def index_faces(imgsdir=None, inst=None, img_containers=None, cache=True, crop_square=True, resize=None, verbose=True) -> dict:
     """Processes and indexes faces from the CFD and dumps them to a json file
        for easy retrieval"""
     # a dictionary to index references to images
@@ -136,6 +137,7 @@ def index_faces(imgsdir=None, inst=None, img_containers=None, cache=True, crop_s
     # iterate over subfolders corresponding to each person in the DB
     for container in progressbar(img_containers, redirect_stdout=True):
         # iterate over the individual pictures of each person
+        if verbose: print("reading from %s" % container)
         for filename in os.listdir(container):
             basename = filename.split('.')[0]
             if not len(basename):
@@ -149,7 +151,9 @@ def index_faces(imgsdir=None, inst=None, img_containers=None, cache=True, crop_s
             # store image reference in a central dict
             face = Face(rac=rac, gen=gen, emo=emo, id=id, resize=resize,
                         path=os.path.join(container, filename), cache=True)
-            print(rac+' '+gen+' '+emo+' '+id)
+
+            if verbose: print("Processing image:",rac+' '+gen+' '+emo+' '+id)
+
             img_ref_dict[rac][gen][emo][id] = face
             # os.path.join(container, filename)
 
@@ -164,11 +168,13 @@ def index_faces(imgsdir=None, inst=None, img_containers=None, cache=True, crop_s
                 face.save_img(os.path.join(instimgdir,
                                            rac+' '+gen+' '+emo+' '+id+'.png'))
 
-    # dump objects to .json files in the installation directory
-    with open(os.path.join(inst,'images.json'),'w') as imgjson:
-        json.dump(img_ref_dict, imgjson)
-    with open(os.path.join(inst,'indexed.json'),'w') as indjson:
-        json.dump(indexed_faces, indjson)
+    # dump objects to .pickle files in the installation directory
+    with open(os.path.join(inst,'images.pickle'),'wb') as imgout:
+        pickle.dump(img_ref_dict, imgout)
+        if verbose: print("Pickle output at %s"%str(imgout))
+    with open(os.path.join(inst,'indexed.pickle'),'wb') as indout:
+        pickle.dump(indexed_faces, indout)
+        if verbose: print("Pickle output at %s"%str(indout))
 
     return img_ref_dict, indexed_faces
 

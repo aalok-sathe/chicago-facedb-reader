@@ -9,6 +9,7 @@ import shutil # for filesystem access
 import cv2 # opencv library for image processing
 import typing # for function annotations
 import json # to dump objects in the json format (as opposed to pickled binary)
+import pickle # to dump objects as an alternative to json
 import xlrd,csv # to read the CFD data codebook and output it to a csv file
 from progressbar import progressbar # to display progress during iteration
 from collections import defaultdict # to use during indexing faces
@@ -19,7 +20,7 @@ def is_prepared(home=None, inst=None) -> bool:
     """Checks to see if the installation directory exists and is well"""
     bool = os.path.isdir(inst)
     cached = os.path.isdir(os.path.join(inst, 'images'))
-    for file in {'cfd_stats.csv','images.json'}:
+    for file in {'cfd_stats.csv','images.pickle'}:
         bool &= os.path.isfile(os.path.join(inst, file))
     if not bool: print ("Installation is pending, broken, or incomplete.")
     return bool, cached
@@ -86,14 +87,19 @@ def prepare(home=None, inst=None, cfddir=None) -> None:
     cache = True
     if input("Cache images in install directory? ([y]/n):\t").lower() == 'n':
         cache = False
-    resize = input("Resize images to custom dimentions?\nInput 'height width',"
-                 + " e.g. (default): 32 32. 'n' for NO.:\t").lower()
+    resize = input("Resize images to custom dimentions? Input 'height width'"
+                 + " ([32 32]/x y/n for NO):\t").lower()
     if resize == 'n': resize = None
     elif not len(resize): resize = (32,32)
     else: resize = tuple(resize.split())
+    verbose = True
+    if input("Verbose output? ([y]/n):\t").lower() == 'n':
+        verbose = False
+
+    print("Indexing. Installation directory: '%s'" %inst)
 
     (img_ref_dict,
     indexed_faces) = faces.index_faces(imgsdir=imgsdir, inst=inst,
                                        img_containers=img_containers,
                                        cache=cache, resize=resize,
-                                       crop_square=crop_square)
+                                       crop_square=crop_square, verbose=verbose)
