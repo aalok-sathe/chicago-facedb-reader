@@ -107,7 +107,7 @@ class Face:
         self.shape=imgdata.shape
 
     def retrieve_img(self, resize=resize, crop_square=True, grayscale=True):
-        if self.imgdata == None:
+        if type(self.imgdata) != np.array:
             self.imgdata = cv2.imread(self.path)
         img = self.imgdata
         if resize != None:

@@ -6,8 +6,11 @@ from __future__ import absolute_import
 import os                   # file i/o and fs access
 import shutil               # file i/o
 import json                 # to dump py objects to json files
+import pickle               # to read pickled files
 import random               # to shuffle data before supplying
 import numpy as np          # for vector artithmetic
+
+from progressbar import progressbar     # to display progress
 
 from . import preparation   # local file to manage installation
 from . import faces         # local file to handle files
@@ -32,8 +35,8 @@ except AssertionError:
 # clean up existing installation. simply rm's files
 ################################################################
 def clean():
-    confirmation = input("Clean installation? You will have to reindex faces"
-                       + " on the next run. (y/n): ").lower()
+    confirmation = input("Clean installation %s? You will have to reindex faces"
+                       + " on the next run. (y/n): "%inst).lower()
     if confirmation == 'y':
         try:
             shutil.rmtree(inst)
@@ -46,13 +49,14 @@ def clean():
 # provide organized data split into train and test sets for
 # use, most likely, with some machine learning procedure
 ################################################################
-def load_data(grayscale=True, train_proportion=.9, resize=None, faces=False):
+def load_data(grayscale=True, train_proportion=.9, resize=None):
     """Method for use in other scripts and/or modules
     to produce DB data in a systematic manner, split into
     a training set and a test set (similar to the keras-MNIST method)"""
     # load json objects storing face references
     with open(os.path.join(inst,'images.pickle'),'rb') as imgjson:
         img_ref_dict = pickle.load(imgjson)
+        print(img_ref_dict)
     with open(os.path.join(inst,'indexed.pickle'),'rb') as indjson:
         indexed_faces = pickle.load(indjson)
 
@@ -72,15 +76,17 @@ def load_data(grayscale=True, train_proportion=.9, resize=None, faces=False):
         entry = dict(zip(['rac', 'gen', 'emo', 'id'], item.split()))
         returnable[0][0] = np.append(returnable[0][0],
                                      [faces.get_face(**entry,
-                                      grayscale=grayscale, resize=resize)])
+                                      grayscale=grayscale, resize=resize,
+                                      img_ref_dict=img_ref_dict)])
         returnable[0][1] = np.append(returnable[0][1],
                                      np.array([
-                                        Race[entry['rac']].value,
-                                        Gender[entry['gen']].value,
-                                        Emotion[entry['emo']].value,
+                                        faces.Race[entry['rac']].value,
+                                        faces.Gender[entry['gen']].value,
+                                        faces.Emotion[entry['emo']].value,
                                      ], dtype=np.uint8))
         if resize == None:
-            resize = faces.get_face(**entry).shape[:2]
+            resize = faces.get_face(**entry,
+                                    img_ref_dict=img_ref_dict).shape[:2]
 
     if grayscale: channels = 1
     else: channels = 3
@@ -93,9 +99,9 @@ def load_data(grayscale=True, train_proportion=.9, resize=None, faces=False):
                                       grayscale=grayscale, resize=resize)])
         returnable[1][1] = np.append(returnable[1][1],
                                      np.array([
-                                        Race[entry['rac']].value,
-                                        Gender[entry['gen']].value,
-                                        Emotion[entry['emo']].value,
+                                        faces.Race[entry['rac']].value,
+                                        faces.Gender[entry['gen']].value,
+                                        faces.Emotion[entry['emo']].value,
                                      ], dtype=np.uint8))
 
     for inputset in (0,1):

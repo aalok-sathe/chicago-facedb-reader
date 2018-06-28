@@ -20,7 +20,7 @@ def is_prepared(home=None, inst=None) -> bool:
     """Checks to see if the installation directory exists and is well"""
     bool = os.path.isdir(inst)
     cached = os.path.isdir(os.path.join(inst, 'images'))
-    for file in {'cfd_stats.csv','images.pickle'}:
+    for file in {'data.csv','images.pickle'}:
         bool &= os.path.isfile(os.path.join(inst, file))
     if not bool: print ("Installation is pending, broken, or incomplete.")
     return bool, cached
@@ -88,9 +88,9 @@ def prepare(home=None, inst=None, cfddir=None) -> None:
     if input("Cache images in install directory? ([y]/n):\t").lower() == 'n':
         cache = False
     resize = input("Resize images to custom dimentions? Input 'height width'"
-                 + " ([32 32]/x y/n for NO):\t").lower()
+                 + " ([28,28]/x y/n for NO):\t").lower()
     if resize == 'n': resize = None
-    elif not len(resize): resize = (32,32)
+    elif not len(resize): resize = (28,28)
     else: resize = tuple(resize.split())
     verbose = True
     if input("Verbose output? ([y]/n):\t").lower() == 'n':
