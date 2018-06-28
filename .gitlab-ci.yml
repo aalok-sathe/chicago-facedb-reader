@@ -20,9 +20,9 @@ deploy:
             - build/
             - dist/
             - cfd_reader.egg-info/
-    only:
-    - /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
-    - /^\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
+    #only:
+    #- /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
+    #- /^\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
     environment:
         name: dev
 
