@@ -33,11 +33,12 @@ test:
     #    - python3 -m pip install -U setuptools wheel twine
     script:
         - mkdir ~/.cfd-faces && cd ~/.cfd-faces && mkdir images
-        - touch data.csv images.json
+        - touch data.csv images.pickle
         - python3 -m pip install cfd-reader
         - python3 -c "import cfd_reader"
     only:
     - /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
     - /^\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
+    - /^\d+\.\d+\.\d+\.\d+([abc]\d*)?$/ # Developmental tag
     environment:
         name: dev
