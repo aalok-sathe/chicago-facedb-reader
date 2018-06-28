@@ -13,7 +13,8 @@ deploy:
         - python3 -m pip install -U setuptools wheel twine
     script:
         - python3 setup.py sdist bdist_wheel
-        - python3 -m twine upload dist/*
+        - twine upload dist/*.tar.gz
+        - twine upload dist/*.whl
     artifacts:
         paths:
             - build/
