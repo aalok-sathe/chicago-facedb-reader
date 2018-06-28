@@ -20,9 +20,9 @@ deploy:
             - build/
             - dist/
             - cfd_reader.egg-info/
-    #only:
-    #- /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
-    #- /^\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
+    only:
+    - /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
+    - /^\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
     environment:
         name: dev
 
@@ -33,7 +33,7 @@ test:
     #    - python3 -m pip install -U setuptools wheel twine
     script:
         - mkdir ~/.cfd-faces && cd ~/.cfd-faces && mkdir images
-        - touch cfd_stats.csv images.json
+        - touch data.csv images.json
         - python3 -m pip install cfd-reader
         - python3 -c "import cfd_reader"
     #only:
